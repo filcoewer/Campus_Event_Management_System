@@ -47,8 +47,7 @@ public class CampusEventManagementSystem {
     private static void handleStudent(Student student, String choice) {
         switch (choice) {
             case "1":
-                manager.getAllEvents().stream()
-                        .sorted(java.util.Comparator.comparing(Event::getTime))
+                manager.getSortedEvents().stream()
                         .forEach(e -> System.out.printf("%s: %s at %s %s (%d/%d) [%s]\n",
                                 e.getId(), e.getTitle(), e.getLocation(), e.getTime(),
                                 e.getParticipants().size(), e.getCapacity(), e.getStatus()));
@@ -115,7 +114,9 @@ public class CampusEventManagementSystem {
                 System.out.println("Event created.");
                 break;
             case "2":
-                for (Event event : org.getHostedEvents()) {
+                for (Event event : org.getHostedEvents().stream()
+                        .sorted(Event.STATUS_DATE_COMPARATOR)
+                        .toList()) {
                     System.out.printf("%s: %s at %s %s (%d/%d) [%s]\n",
                             event.getId(), event.getTitle(), event.getLocation(), event.getTime(),
                             event.getParticipants().size(), event.getCapacity(), event.getStatus());

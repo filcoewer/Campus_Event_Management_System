@@ -26,3 +26,5 @@ Features:
 - Search events by keyword or date
 - Export participant lists to CSV
 - Event status shows whether an event is open, full, or ended
+- Events are listed with open events first, then full, then ended, sorted by date
+  and finished events cannot be registered or canceled

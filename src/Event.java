@@ -28,6 +28,7 @@ public class Event {
     public int getCapacity() { return capacity; }
     public Organizer getOrganizer() { return organizer; }
     public List<Student> getParticipants() { return participants; }
+
     public String getStatus() {
         try {
             LocalDate date = LocalDate.parse(time);
@@ -52,8 +53,33 @@ public class Event {
         }
     }
 
+    private LocalDate parseDate() {
+        try {
+            return LocalDate.parse(time);
+        } catch (DateTimeParseException e) {
+            return LocalDate.MAX;
+        }
+    }
+
+    public int getStatusRank() {
+        switch (getStatus()) {
+            case "開放中":
+                return 0;
+            case "額滿":
+                return 1;
+            case "已結束":
+                return 2;
+            default:
+                return 3;
+        }
+    }
+
+    public static final java.util.Comparator<Event> STATUS_DATE_COMPARATOR =
+            java.util.Comparator.comparingInt(Event::getStatusRank)
+                    .thenComparing(Event::parseDate);
+
     public boolean register(Student s) {
-        if (participants.size() >= capacity) {
+        if (getStatus().equals("已結束") || participants.size() >= capacity) {
             return false;
         }
         if (!participants.contains(s)) {
@@ -64,6 +90,9 @@ public class Event {
     }
 
     public void cancel(Student s) {
+        if (getStatus().equals("已結束")) {
+            return;
+        }
         participants.remove(s);
     }
 }

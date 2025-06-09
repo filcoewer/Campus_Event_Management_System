@@ -19,6 +19,10 @@ public class Student extends User {
 
     public void cancelEvent(Event e) {
         if (registeredEvents.contains(e)) {
+            if (e.getStatus().equals("已結束")) {
+                System.out.println("Cannot cancel registration for event: " + e.getTitle());
+                return;
+            }
             registeredEvents.remove(e);
             e.cancel(this);
             System.out.println("Cancelled registration for event: " + e.getTitle());

@@ -47,7 +47,7 @@ public class CampusEventManagementGUI {
         panel.add(idLabel, gbc);
 
         JTextField idField = new JTextField();
-        idField.setPreferredSize(new Dimension(200, 40));
+        idField.setPreferredSize(new Dimension(400, 40));
         idField.setFont(scaled(idField.getFont(), 1.5f));
         gbc.gridx = 1;
         gbc.weightx = 0;
@@ -176,8 +176,12 @@ public class CampusEventManagementGUI {
                         .filter(evnt -> evnt.getId().equals(eventId))
                         .findFirst().orElse(null);
                 if (ev != null) {
-                    student.registerEvent(ev);
-                    refreshStudentTables(student, regModel, allModel);
+                    if ("已結束".equals(ev.getStatus())) {
+                        JOptionPane.showMessageDialog(frame, "活動已結束，無法報名");
+                    } else {
+                        student.registerEvent(ev);
+                        refreshStudentTables(student, regModel, allModel);
+                    }
                 } else {
                     JOptionPane.showMessageDialog(frame, "找不到活動");
                 }
@@ -190,8 +194,12 @@ public class CampusEventManagementGUI {
                         .filter(evnt -> evnt.getId().equals(eventId))
                         .findFirst().orElse(null);
                 if (ev != null) {
-                    student.cancelEvent(ev);
-                    refreshStudentTables(student, regModel, allModel);
+                    if ("已結束".equals(ev.getStatus())) {
+                        JOptionPane.showMessageDialog(frame, "活動已結束，無法取消");
+                    } else {
+                        student.cancelEvent(ev);
+                        refreshStudentTables(student, regModel, allModel);
+                    }
                 } else {
                     JOptionPane.showMessageDialog(frame, "在你的報名中找不到此活動");
                 }
@@ -319,24 +327,28 @@ public class CampusEventManagementGUI {
 
     private void refreshStudentTables(Student student, DefaultTableModel regModel, DefaultTableModel allModel) {
         regModel.setRowCount(0);
-        for (Event ev : student.getRegisteredEvents()) {
+        for (Event ev : student.getRegisteredEvents().stream()
+                .sorted(Event.STATUS_DATE_COMPARATOR)
+                .toList()) {
             regModel.addRow(new Object[]{ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size() + "/" + ev.getCapacity(), ev.getStatus()});
         }
         allModel.setRowCount(0);
-        for (Event ev : manager.getAllEvents()) {
+        for (Event ev : manager.getSortedEvents()) {
             allModel.addRow(new Object[]{ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size() + "/" + ev.getCapacity(), ev.getStatus()});
         }
     }
 
     private void refreshOrganizerTable(Organizer org, DefaultTableModel model) {
         model.setRowCount(0);
-        for (Event ev : org.getHostedEvents()) {
+        for (Event ev : org.getHostedEvents().stream()
+                .sorted(Event.STATUS_DATE_COMPARATOR)
+                .toList()) {
             model.addRow(new Object[]{ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size() + "/" + ev.getCapacity(), ev.getStatus()});
         }
     }
 
     private void showAllEvents() {
-        String msg = manager.getAllEvents().stream()
+        String msg = manager.getSortedEvents().stream()
                 .map(ev -> String.format("%s: %s 在 %s %s (%d/%d) [%s]", ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size(), ev.getCapacity(), ev.getStatus()))
                 .collect(Collectors.joining("\n"));
         if (msg.isEmpty()) msg = "沒有活動。";

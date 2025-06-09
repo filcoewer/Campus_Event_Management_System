@@ -18,6 +18,12 @@ public class EventManager {
         return events.values();
     }
 
+    public java.util.List<Event> getSortedEvents() {
+        return events.values().stream()
+                .sorted(Event.STATUS_DATE_COMPARATOR)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     public Student getStudent(String id) {
         return students.get(id);
     }
@@ -29,6 +35,7 @@ public class EventManager {
     public void addEvent(Event e) {
         events.put(e.getId(), e);
     }
+
     public List<Event> searchEvents(String query) {
         java.time.LocalDate parsedDate;
         try {
@@ -48,7 +55,7 @@ public class EventManager {
                     }
                     return ev.getTitle().toLowerCase().contains(query.toLowerCase());
                 })
-                .sorted(java.util.Comparator.comparing(Event::getTime))
+                .sorted(Event.STATUS_DATE_COMPARATOR)
                 .collect(java.util.stream.Collectors.toList());
     }
 
