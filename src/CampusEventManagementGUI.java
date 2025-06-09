@@ -14,7 +14,8 @@ public class CampusEventManagementGUI {
         JButton btn = new JButton(text);
         btn.setFocusPainted(false);
         btn.setBorder(new LineBorder(Color.GRAY, 1, true));
-        btn.setMaximumSize(new Dimension(200, 40));
+        btn.setPreferredSize(new Dimension(150, 100));
+        btn.setMaximumSize(new Dimension(150, 100));
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         return btn;
     }
@@ -26,15 +27,19 @@ public class CampusEventManagementGUI {
     private void showLogin() {
         frame = new JFrame("校園活動管理系統 - 登入");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new GridBagLayout());
-        JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout());
-        panel.add(new JLabel("使用者ID："));
-        JTextField idField = new JTextField(10);
+        JPanel panel = new JPanel(new FlowLayout());
+
+        JLabel idLabel = new JLabel("使用者ID：");
+        idLabel.setFont(idLabel.getFont().deriveFont(idLabel.getFont().getSize() * 1.5f));
+        panel.add(idLabel);
+
+        JTextField idField = new JTextField(15); // 10 * 1.5
+        idField.setFont(idField.getFont().deriveFont(idField.getFont().getSize() * 1.5f));
         panel.add(idField);
-        JButton loginButton = createButton("登入");
-        loginButton.setPreferredSize(new Dimension(250, 60));
-        loginButton.setFont(loginButton.getFont().deriveFont(Font.BOLD, 18f));
+
+        JButton loginButton = new JButton("登入");
+        loginButton.setPreferredSize(new Dimension(225, 60));
+        loginButton.setFont(loginButton.getFont().deriveFont(loginButton.getFont().getSize() * 1.5f));
         panel.add(loginButton);
         loginButton.addActionListener(e -> {
             String id = idField.getText().trim();
@@ -55,7 +60,7 @@ public class CampusEventManagementGUI {
         });
         frame.getContentPane().add(panel);
         frame.pack();
-        frame.setSize(1024, 900);
+        frame.setSize(1024, 800);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
@@ -136,7 +141,7 @@ public class CampusEventManagementGUI {
         refreshStudentTables(student, regModel, allModel);
         frame.getContentPane().add(split);
         frame.pack();
-        frame.setSize(1024, 900);
+        frame.setSize(1024, 800);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
@@ -180,7 +185,7 @@ public class CampusEventManagementGUI {
         refreshOrganizerTable(org, hostModel);
         frame.getContentPane().add(split);
         frame.pack();
-        frame.setSize(1024, 900);
+        frame.setSize(1024, 800);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
