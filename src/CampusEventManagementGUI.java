@@ -1,12 +1,22 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.border.LineBorder;
 import java.util.stream.Collectors;
 
 public class CampusEventManagementGUI {
     private EventManager manager = new EventManager();
     private JFrame frame;
     private User currentUser;
+
+    private JButton createButton(String text) {
+        JButton btn = new JButton(text);
+        btn.setFocusPainted(false);
+        btn.setBorder(new LineBorder(Color.GRAY, 1, true));
+        btn.setMaximumSize(new Dimension(200, 40));
+        btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return btn;
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new CampusEventManagementGUI().showLogin());
@@ -20,7 +30,7 @@ public class CampusEventManagementGUI {
         panel.add(new JLabel("使用者ID："));
         JTextField idField = new JTextField(10);
         panel.add(idField);
-        JButton loginButton = new JButton("登入");
+        JButton loginButton = createButton("登入");
         panel.add(loginButton);
         loginButton.addActionListener(e -> {
             String id = idField.getText().trim();
@@ -41,6 +51,7 @@ public class CampusEventManagementGUI {
         });
         frame.getContentPane().add(panel);
         frame.pack();
+        frame.setSize(900, 1024);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
@@ -49,16 +60,20 @@ public class CampusEventManagementGUI {
         frame = new JFrame("學生選單 - " + student.getName());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(0,1));
-        JButton viewBtn = new JButton("查看活動");
-        JButton registerBtn = new JButton("報名活動");
-        JButton cancelBtn = new JButton("取消報名");
-        JButton myBtn = new JButton("我的活動");
-        JButton logoutBtn = new JButton("登出");
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        JButton viewBtn = createButton("查看活動");
+        JButton registerBtn = createButton("報名活動");
+        JButton cancelBtn = createButton("取消報名");
+        JButton myBtn = createButton("我的活動");
+        JButton logoutBtn = createButton("登出");
         panel.add(viewBtn);
+        panel.add(Box.createVerticalStrut(10));
         panel.add(registerBtn);
+        panel.add(Box.createVerticalStrut(10));
         panel.add(cancelBtn);
+        panel.add(Box.createVerticalStrut(10));
         panel.add(myBtn);
+        panel.add(Box.createVerticalStrut(10));
         panel.add(logoutBtn);
 
         viewBtn.addActionListener(e -> showAllEvents());
@@ -103,6 +118,7 @@ public class CampusEventManagementGUI {
 
         frame.getContentPane().add(panel);
         frame.pack();
+        frame.setSize(900, 1024);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
@@ -111,12 +127,14 @@ public class CampusEventManagementGUI {
         frame = new JFrame("主辦者選單 - " + org.getName());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(0,1));
-        JButton createBtn = new JButton("建立活動");
-        JButton viewBtn = new JButton("查看我的活動");
-        JButton logoutBtn = new JButton("登出");
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        JButton createBtn = createButton("建立活動");
+        JButton viewBtn = createButton("查看我的活動");
+        JButton logoutBtn = createButton("登出");
         panel.add(createBtn);
+        panel.add(Box.createVerticalStrut(10));
         panel.add(viewBtn);
+        panel.add(Box.createVerticalStrut(10));
         panel.add(logoutBtn);
 
         createBtn.addActionListener(e -> createEvent(org));
@@ -135,6 +153,7 @@ public class CampusEventManagementGUI {
 
         frame.getContentPane().add(panel);
         frame.pack();
+        frame.setSize(900, 1024);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
