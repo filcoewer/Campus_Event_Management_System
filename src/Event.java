@@ -27,6 +27,15 @@ public class Event {
     public Organizer getOrganizer() { return organizer; }
     public List<Student> getParticipants() { return participants; }
 
+    public void edit(String title, String location, String time, int capacity) {
+        this.title = title;
+        this.location = location;
+        this.time = time;
+        if (capacity >= participants.size()) {
+            this.capacity = capacity;
+        }
+    }
+
     public boolean register(Student s) {
         if (participants.size() >= capacity) {
             return false;

@@ -45,9 +45,11 @@ public class CampusEventManagementSystem {
     private static void handleStudent(Student student, String choice) {
         switch (choice) {
             case "1":
-                for (Event e : manager.getAllEvents()) {
-                    System.out.printf("%s: %s at %s %s (%d/%d)\n", e.getId(), e.getTitle(), e.getLocation(), e.getTime(), e.getParticipants().size(), e.getCapacity());
-                }
+                manager.getAllEvents().stream()
+                        .sorted(java.util.Comparator.comparing(Event::getTime))
+                        .forEach(e -> System.out.printf("%s: %s at %s %s (%d/%d)\n",
+                                e.getId(), e.getTitle(), e.getLocation(), e.getTime(),
+                                e.getParticipants().size(), e.getCapacity()));
                 break;
             case "2":
                 System.out.print("Enter event ID to register: ");
@@ -105,6 +107,39 @@ public class CampusEventManagementSystem {
             case "2":
                 for (Event event : org.getHostedEvents()) {
                     System.out.printf("%s: %s at %s %s (%d/%d)\n", event.getId(), event.getTitle(), event.getLocation(), event.getTime(), event.getParticipants().size(), event.getCapacity());
+                }
+                break;
+            case "3":
+                System.out.print("Enter event ID to edit: ");
+                String editId = scanner.nextLine();
+                Event toEdit = org.getHostedEvents().stream().filter(ev -> ev.getId().equals(editId)).findFirst().orElse(null);
+                if (toEdit == null) {
+                    System.out.println("Event not found");
+                    break;
+                }
+                System.out.print("New title: ");
+                title = scanner.nextLine();
+                System.out.print("New location: ");
+                location = scanner.nextLine();
+                System.out.print("New time: ");
+                time = scanner.nextLine();
+                System.out.print("New capacity: ");
+                try {
+                    capacity = Integer.parseInt(scanner.nextLine());
+                } catch (NumberFormatException ex) {
+                    System.out.println("Invalid capacity");
+                    break;
+                }
+                org.editEvent(toEdit, title, location, time, capacity);
+                break;
+            case "4":
+                System.out.print("Enter event ID to view participants: ");
+                String pid = scanner.nextLine();
+                Event pEvent = org.getHostedEvents().stream().filter(ev -> ev.getId().equals(pid)).findFirst().orElse(null);
+                if (pEvent != null) {
+                    org.listParticipants(pEvent);
+                } else {
+                    System.out.println("Event not found");
                 }
                 break;
             default:
