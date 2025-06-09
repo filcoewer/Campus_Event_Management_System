@@ -198,6 +198,8 @@ public class CampusEventManagementGUI {
                 if (ev != null) {
                     if ("已結束".equals(ev.getStatus())) {
                         JOptionPane.showMessageDialog(frame, "活動已結束，無法報名");
+                    } else if ("額滿".equals(ev.getStatus())) {
+                        JOptionPane.showMessageDialog(frame, "活動已額滿");
                     } else {
                         student.registerEvent(ev);
                         refreshStudentTables(student, regModel, allModel);
@@ -337,7 +339,18 @@ public class CampusEventManagementGUI {
         if (option == JOptionPane.OK_OPTION) {
             try {
                 int capacity = Integer.parseInt(capacityField.getText().trim());
-                Event e = org.createEvent(idField.getText().trim(), titleField.getText().trim(), locationField.getText().trim(), timeField.getText().trim(), capacity);
+                String dateStr = timeField.getText().trim();
+                try {
+                    java.time.LocalDate date = java.time.LocalDate.parse(dateStr);
+                    if (date.isBefore(java.time.LocalDate.now())) {
+                        JOptionPane.showMessageDialog(frame, "日期無效");
+                        return;
+                    }
+                } catch (java.time.format.DateTimeParseException ex) {
+                    JOptionPane.showMessageDialog(frame, "日期無效");
+                    return;
+                }
+                Event e = org.createEvent(idField.getText().trim(), titleField.getText().trim(), locationField.getText().trim(), dateStr, capacity);
                 manager.addEvent(e);
                 JOptionPane.showMessageDialog(frame, "活動已建立。");
             } catch (NumberFormatException ex) {

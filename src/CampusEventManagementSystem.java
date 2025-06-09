@@ -63,9 +63,17 @@ public class CampusEventManagementSystem {
             case "3":
                 System.out.print("Enter event ID to register: ");
                 String eventId = scanner.nextLine();
-                Event e = manager.getAllEvents().stream().filter(ev -> ev.getId().equals(eventId)).findFirst().orElse(null);
+                Event e = manager.getAllEvents().stream()
+                        .filter(ev -> ev.getId().equals(eventId))
+                        .findFirst().orElse(null);
                 if (e != null) {
-                    student.registerEvent(e);
+                    if ("已結束".equals(e.getStatus())) {
+                        System.out.println("Event already ended");
+                    } else if ("額滿".equals(e.getStatus())) {
+                        System.out.println("Event is full");
+                    } else {
+                        student.registerEvent(e);
+                    }
                 } else {
                     System.out.println("Event not found");
                 }
@@ -99,8 +107,19 @@ public class CampusEventManagementSystem {
                 String title = scanner.nextLine();
                 System.out.print("Location: ");
                 String location = scanner.nextLine();
-                System.out.print("Time: ");
+                System.out.print("Time (YYYY-MM-DD): ");
                 String time = scanner.nextLine();
+                java.time.LocalDate date;
+                try {
+                    date = java.time.LocalDate.parse(time);
+                    if (date.isBefore(java.time.LocalDate.now())) {
+                        System.out.println("Invalid date");
+                        return;
+                    }
+                } catch (java.time.format.DateTimeParseException ex) {
+                    System.out.println("Invalid date");
+                    return;
+                }
                 System.out.print("Capacity: ");
                 int capacity;
                 try {
@@ -134,8 +153,18 @@ public class CampusEventManagementSystem {
                 title = scanner.nextLine();
                 System.out.print("New location: ");
                 location = scanner.nextLine();
-                System.out.print("New time: ");
+                System.out.print("New time (YYYY-MM-DD): ");
                 time = scanner.nextLine();
+                try {
+                    java.time.LocalDate d = java.time.LocalDate.parse(time);
+                    if (d.isBefore(java.time.LocalDate.now())) {
+                        System.out.println("Invalid date");
+                        break;
+                    }
+                } catch (java.time.format.DateTimeParseException ex) {
+                    System.out.println("Invalid date");
+                    break;
+                }
                 System.out.print("New capacity: ");
                 try {
                     capacity = Integer.parseInt(scanner.nextLine());

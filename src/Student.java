@@ -9,7 +9,15 @@ public class Student extends User {
     }
 
     public void registerEvent(Event e) {
-        if (!registeredEvents.contains(e) && e.register(this)) {
+        if (registeredEvents.contains(e)) {
+            System.out.println("Cannot register for event: " + e.getTitle());
+            return;
+        }
+        if ("額滿".equals(e.getStatus())) {
+            System.out.println("Event is full: " + e.getTitle());
+            return;
+        }
+        if (e.register(this)) {
             registeredEvents.add(e);
             System.out.println("Registered for event: " + e.getTitle());
         } else {
