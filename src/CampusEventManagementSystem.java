@@ -14,12 +14,14 @@ public class CampusEventManagementSystem {
                 System.out.println("Goodbye!");
                 break;
             }
+            System.out.print("Password: ");
+            String pw = scanner.nextLine();
             User user = manager.getStudent(id);
             if (user == null) {
                 user = manager.getOrganizer(id);
             }
-            if (user == null) {
-                System.out.println("User not found");
+            if (user == null || !user.checkPassword(pw)) {
+                System.out.println("Invalid credentials");
                 continue;
             }
             handleUser(user);
@@ -47,11 +49,19 @@ public class CampusEventManagementSystem {
             case "1":
                 manager.getAllEvents().stream()
                         .sorted(java.util.Comparator.comparing(Event::getTime))
-                        .forEach(e -> System.out.printf("%s: %s at %s %s (%d/%d)\n",
+                        .forEach(e -> System.out.printf("%s: %s at %s %s (%d/%d) [%s]\n",
                                 e.getId(), e.getTitle(), e.getLocation(), e.getTime(),
-                                e.getParticipants().size(), e.getCapacity()));
+                                e.getParticipants().size(), e.getCapacity(), e.getStatus()));
                 break;
             case "2":
+                System.out.print("Keyword or date (YYYY-MM-DD): ");
+                String query = scanner.nextLine();
+                manager.searchEvents(query).forEach(ev ->
+                        System.out.printf("%s: %s at %s %s (%d/%d) [%s]\n",
+                                ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(),
+                                ev.getParticipants().size(), ev.getCapacity(), ev.getStatus()));
+                break;
+            case "3":
                 System.out.print("Enter event ID to register: ");
                 String eventId = scanner.nextLine();
                 Event e = manager.getAllEvents().stream().filter(ev -> ev.getId().equals(eventId)).findFirst().orElse(null);
@@ -61,7 +71,7 @@ public class CampusEventManagementSystem {
                     System.out.println("Event not found");
                 }
                 break;
-            case "3":
+            case "4":
                 System.out.print("Enter event ID to cancel: ");
                 String cancelId = scanner.nextLine();
                 e = student.getRegisteredEvents().stream().filter(ev -> ev.getId().equals(cancelId)).findFirst().orElse(null);
@@ -71,7 +81,7 @@ public class CampusEventManagementSystem {
                     System.out.println("Event not found in your registrations");
                 }
                 break;
-            case "4":
+            case "5":
                 for (Event reg : student.getRegisteredEvents()) {
                     System.out.printf("%s: %s at %s %s\n", reg.getId(), reg.getTitle(), reg.getLocation(), reg.getTime());
                 }
@@ -106,7 +116,9 @@ public class CampusEventManagementSystem {
                 break;
             case "2":
                 for (Event event : org.getHostedEvents()) {
-                    System.out.printf("%s: %s at %s %s (%d/%d)\n", event.getId(), event.getTitle(), event.getLocation(), event.getTime(), event.getParticipants().size(), event.getCapacity());
+                    System.out.printf("%s: %s at %s %s (%d/%d) [%s]\n",
+                            event.getId(), event.getTitle(), event.getLocation(), event.getTime(),
+                            event.getParticipants().size(), event.getCapacity(), event.getStatus());
                 }
                 break;
             case "3":
@@ -138,6 +150,17 @@ public class CampusEventManagementSystem {
                 Event pEvent = org.getHostedEvents().stream().filter(ev -> ev.getId().equals(pid)).findFirst().orElse(null);
                 if (pEvent != null) {
                     org.listParticipants(pEvent);
+                } else {
+                    System.out.println("Event not found");
+                }
+                break;
+            case "5":
+                System.out.print("Enter event ID to export participants: ");
+                String expId = scanner.nextLine();
+                Event expEvent = org.getHostedEvents().stream().filter(ev -> ev.getId().equals(expId)).findFirst().orElse(null);
+                if (expEvent != null) {
+                    manager.exportParticipants(expEvent, expId + "_participants.csv");
+                    System.out.println("Exported to " + expId + "_participants.csv");
                 } else {
                     System.out.println("Event not found");
                 }

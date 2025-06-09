@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 public class Event {
     private String id;
@@ -26,6 +28,20 @@ public class Event {
     public int getCapacity() { return capacity; }
     public Organizer getOrganizer() { return organizer; }
     public List<Student> getParticipants() { return participants; }
+    public String getStatus() {
+        try {
+            LocalDate date = LocalDate.parse(time);
+            if (date.isBefore(LocalDate.now())) {
+                return "已結束";
+            }
+        } catch (DateTimeParseException e) {
+            // ignore malformed date
+        }
+        if (participants.size() >= capacity) {
+            return "額滿";
+        }
+        return "開放中";
+    }
 
     public void edit(String title, String location, String time, int capacity) {
         this.title = title;

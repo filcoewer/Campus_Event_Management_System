@@ -4,8 +4,8 @@ import java.util.List;
 public class Student extends User {
     private List<Event> registeredEvents = new ArrayList<>();
 
-    public Student(String id, String name) {
-        super(id, name);
+    public Student(String id, String name, String password) {
+        super(id, name, password);
     }
 
     public void registerEvent(Event e) {
@@ -31,6 +31,6 @@ public class Student extends User {
 
     @Override
     public void displayMenu() {
-        System.out.println("1. View Events\n2. Register Event\n3. Cancel Event\n4. My Events\n0. Logout");
+        System.out.println("1. View Events\n2. Search Events\n3. Register Event\n4. Cancel Registration\n5. My Events\n0. Logout");
     }
 }

@@ -29,6 +29,28 @@ public class EventManager {
     public void addEvent(Event e) {
         events.put(e.getId(), e);
     }
+    public List<Event> searchEvents(String query) {
+        java.time.LocalDate parsedDate;
+        try {
+            parsedDate = java.time.LocalDate.parse(query);
+        } catch (java.time.format.DateTimeParseException ex) {
+            parsedDate = null;
+        }
+        final java.time.LocalDate date = parsedDate;
+        return events.values().stream()
+                .filter(ev -> {
+                    if (date != null) {
+                        try {
+                            return java.time.LocalDate.parse(ev.getTime()).equals(date);
+                        } catch (java.time.format.DateTimeParseException e) {
+                            return false;
+                        }
+                    }
+                    return ev.getTitle().toLowerCase().contains(query.toLowerCase());
+                })
+                .sorted(java.util.Comparator.comparing(Event::getTime))
+                .collect(java.util.stream.Collectors.toList());
+    }
 
     private void loadUsers() {
         File f = new File(USERS_FILE);
@@ -37,14 +59,15 @@ public class EventManager {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length < 3) continue;
+                if (parts.length < 4) continue;
                 String role = parts[0];
                 String id = parts[1];
                 String name = parts[2];
+                String password = parts[3];
                 if ("student".equalsIgnoreCase(role)) {
-                    students.put(id, new Student(id, name));
+                    students.put(id, new Student(id, name, password));
                 } else if ("organizer".equalsIgnoreCase(role)) {
-                    organizers.put(id, new Organizer(id, name));
+                    organizers.put(id, new Organizer(id, name, password));
                 }
             }
         } catch (IOException e) {
@@ -87,6 +110,16 @@ public class EventManager {
         try (PrintWriter pw = new PrintWriter(new FileWriter(EVENTS_FILE))) {
             for (Event e : events.values()) {
                 pw.printf("%s,%s,%s,%s,%d,%s%n", e.getId(), e.getTitle(), e.getLocation(), e.getTime(), e.getCapacity(), e.getOrganizer().getId());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void exportParticipants(Event event, String file) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(file))) {
+            for (Student s : event.getParticipants()) {
+                pw.printf("%s,%s%n", s.getId(), s.getName());
             }
         } catch (IOException e) {
             e.printStackTrace();

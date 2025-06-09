@@ -55,11 +55,25 @@ public class CampusEventManagementGUI {
         gbc.anchor = GridBagConstraints.WEST;
         panel.add(idField, gbc);
 
+        JLabel pwLabel = new JLabel("密碼：");
+        pwLabel.setFont(scaled(pwLabel.getFont(), 1.5f));
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        panel.add(pwLabel, gbc);
+
+        JPasswordField pwField = new JPasswordField();
+        pwField.setPreferredSize(new Dimension(400, 40));
+        pwField.setFont(scaled(pwField.getFont(), 1.5f));
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel.add(pwField, gbc);
+
         JButton loginButton = new JButton("登入");
         loginButton.setPreferredSize(new Dimension(225, 60));
         loginButton.setFont(scaled(loginButton.getFont(), 1.5f));
         gbc.gridx = 2;
-        gbc.gridy = 0;
+        gbc.gridy = 1;
         gbc.gridwidth = 1;
         gbc.weightx = 0;
         gbc.weighty = 0;
@@ -68,12 +82,13 @@ public class CampusEventManagementGUI {
         panel.add(loginButton, gbc);
         loginButton.addActionListener(e -> {
             String id = idField.getText().trim();
+            String pw = new String(pwField.getPassword());
             currentUser = manager.getStudent(id);
             if (currentUser == null) {
                 currentUser = manager.getOrganizer(id);
             }
-            if (currentUser == null) {
-                JOptionPane.showMessageDialog(frame, "找不到使用者");
+            if (currentUser == null || !currentUser.checkPassword(pw)) {
+                JOptionPane.showMessageDialog(frame, "帳號或密碼錯誤");
             } else {
                 frame.dispose();
                 if (currentUser instanceof Student) {
@@ -95,10 +110,13 @@ public class CampusEventManagementGUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        JButton searchBtn = createButton("搜尋活動");
         JButton registerBtn = createButton("報名活動");
         JButton cancelBtn = createButton("取消報名");
         JButton logoutBtn = createButton("登出");
         buttonPanel.add(Box.createVerticalGlue());
+        buttonPanel.add(searchBtn);
+        buttonPanel.add(Box.createVerticalStrut(20));
         buttonPanel.add(registerBtn);
         buttonPanel.add(Box.createVerticalStrut(20));
         buttonPanel.add(cancelBtn);
@@ -110,7 +128,7 @@ public class CampusEventManagementGUI {
         JLabel regLabel = new JLabel("已報名活動", SwingConstants.CENTER);
         regLabel.setFont(scaled(regLabel.getFont(), 1.2f));
         registeredPanel.add(regLabel, BorderLayout.NORTH);
-        String[] cols = {"ID", "名稱", "地點", "時間", "人數"};
+        String[] cols = {"ID", "名稱", "地點", "時間", "人數", "狀態"};
         DefaultTableModel regModel = new DefaultTableModel(cols, 0) {
             public boolean isCellEditable(int r, int c) { return false; }
         };
@@ -138,6 +156,19 @@ public class CampusEventManagementGUI {
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, buttonPanel, rightPanel);
         split.setResizeWeight(0);
         split.setEnabled(false);
+        searchBtn.addActionListener(e -> {
+            String q = JOptionPane.showInputDialog(frame, "輸入關鍵字或日期(YYYY-MM-DD)：");
+            if (q != null) {
+                java.util.List<Event> result = manager.searchEvents(q);
+                String msg = result.stream()
+                        .map(ev -> String.format("%s: %s 在 %s %s (%d/%d) [%s]",
+                                ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(),
+                                ev.getParticipants().size(), ev.getCapacity(), ev.getStatus()))
+                        .collect(Collectors.joining("\n"));
+                if (msg.isEmpty()) msg = "沒有符合的活動。";
+                JOptionPane.showMessageDialog(frame, msg);
+            }
+        });
         registerBtn.addActionListener(e -> {
             String eventId = JOptionPane.showInputDialog(frame, "輸入要報名的活動ID：");
             if (eventId != null) {
@@ -186,9 +217,12 @@ public class CampusEventManagementGUI {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         JButton createBtn = createButton("建立活動");
+        JButton exportBtn = createButton("匯出名單");
         JButton logoutBtn = createButton("登出");
         buttonPanel.add(Box.createVerticalGlue());
         buttonPanel.add(createBtn);
+        buttonPanel.add(Box.createVerticalStrut(20));
+        buttonPanel.add(exportBtn);
         buttonPanel.add(Box.createVerticalStrut(20));
         buttonPanel.add(logoutBtn);
         buttonPanel.add(Box.createVerticalGlue());
@@ -197,7 +231,7 @@ public class CampusEventManagementGUI {
         JLabel hostLabel = new JLabel("我的活動", SwingConstants.CENTER);
         hostLabel.setFont(scaled(hostLabel.getFont(), 1.2f));
         rightPanel.add(hostLabel, BorderLayout.NORTH);
-        String[] cols = {"ID", "名稱", "地點", "時間", "人數"};
+        String[] cols = {"ID", "名稱", "地點", "時間", "人數", "狀態"};
         DefaultTableModel hostModel = new DefaultTableModel(cols, 0) {
             public boolean isCellEditable(int r, int c) { return false; }
         };
@@ -213,6 +247,20 @@ public class CampusEventManagementGUI {
         createBtn.addActionListener(e -> {
             createEvent(org);
             refreshOrganizerTable(org, hostModel);
+        });
+        exportBtn.addActionListener(e -> {
+            String eventId = JOptionPane.showInputDialog(frame, "輸入活動ID以匯出名單：");
+            if (eventId != null) {
+                Event ev = org.getHostedEvents().stream()
+                        .filter(evnt -> evnt.getId().equals(eventId))
+                        .findFirst().orElse(null);
+                if (ev != null) {
+                    manager.exportParticipants(ev, eventId + "_participants.csv");
+                    JOptionPane.showMessageDialog(frame, "已匯出到 " + eventId + "_participants.csv");
+                } else {
+                    JOptionPane.showMessageDialog(frame, "找不到活動");
+                }
+            }
         });
         logoutBtn.addActionListener(e -> {
             manager.saveEvents();
@@ -272,24 +320,24 @@ public class CampusEventManagementGUI {
     private void refreshStudentTables(Student student, DefaultTableModel regModel, DefaultTableModel allModel) {
         regModel.setRowCount(0);
         for (Event ev : student.getRegisteredEvents()) {
-            regModel.addRow(new Object[]{ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size() + "/" + ev.getCapacity()});
+            regModel.addRow(new Object[]{ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size() + "/" + ev.getCapacity(), ev.getStatus()});
         }
         allModel.setRowCount(0);
         for (Event ev : manager.getAllEvents()) {
-            allModel.addRow(new Object[]{ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size() + "/" + ev.getCapacity()});
+            allModel.addRow(new Object[]{ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size() + "/" + ev.getCapacity(), ev.getStatus()});
         }
     }
 
     private void refreshOrganizerTable(Organizer org, DefaultTableModel model) {
         model.setRowCount(0);
         for (Event ev : org.getHostedEvents()) {
-            model.addRow(new Object[]{ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size() + "/" + ev.getCapacity()});
+            model.addRow(new Object[]{ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size() + "/" + ev.getCapacity(), ev.getStatus()});
         }
     }
 
     private void showAllEvents() {
         String msg = manager.getAllEvents().stream()
-                .map(ev -> String.format("%s: %s 在 %s %s (%d/%d)", ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size(), ev.getCapacity()))
+                .map(ev -> String.format("%s: %s 在 %s %s (%d/%d) [%s]", ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size(), ev.getCapacity(), ev.getStatus()))
                 .collect(Collectors.joining("\n"));
         if (msg.isEmpty()) msg = "沒有活動。";
         JOptionPane.showMessageDialog(frame, msg);
