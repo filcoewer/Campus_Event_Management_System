@@ -34,20 +34,23 @@ public class CampusEventManagementGUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.CENTER;
 
         JLabel idLabel = new JLabel("使用者ID：");
         idLabel.setFont(scaled(idLabel.getFont(), 1.5f));
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
+        gbc.weightx = 0;
+        gbc.weighty = 0;
+        gbc.anchor = GridBagConstraints.EAST;
         panel.add(idLabel, gbc);
 
         JTextField idField = new JTextField(15);
         idField.setFont(scaled(idField.getFont(), 1.5f));
         gbc.gridx = 1;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(idField, gbc);
 
         JButton loginButton = new JButton("登入");
@@ -56,8 +59,10 @@ public class CampusEventManagementGUI {
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = 2;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
+        gbc.weightx = 0;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
         panel.add(loginButton, gbc);
         loginButton.addActionListener(e -> {
             String id = idField.getText().trim();
