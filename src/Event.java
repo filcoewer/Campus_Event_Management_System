@@ -28,7 +28,6 @@ public class Event {
     public int getCapacity() { return capacity; }
     public Organizer getOrganizer() { return organizer; }
     public List<Student> getParticipants() { return participants; }
-
     public String getStatus() {
         try {
             LocalDate date = LocalDate.parse(time);

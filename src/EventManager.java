@@ -29,7 +29,6 @@ public class EventManager {
     public void addEvent(Event e) {
         events.put(e.getId(), e);
     }
-
     public List<Event> searchEvents(String query) {
         java.time.LocalDate parsedDate;
         try {
