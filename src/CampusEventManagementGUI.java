@@ -10,13 +10,18 @@ public class CampusEventManagementGUI {
     private JFrame frame;
     private User currentUser;
 
+    private Font scaled(Font f, float factor) {
+        return f.deriveFont(f.getSize2D() * factor);
+    }
+
     private JButton createButton(String text) {
         JButton btn = new JButton(text);
         btn.setFocusPainted(false);
         btn.setBorder(new LineBorder(Color.GRAY, 1, true));
         btn.setPreferredSize(new Dimension(150, 100));
-        btn.setMaximumSize(new Dimension(250, 100));
+        btn.setMaximumSize(new Dimension(150, 100));
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btn.setFont(scaled(btn.getFont(), 1.5f));
         return btn;
     }
 
@@ -27,21 +32,33 @@ public class CampusEventManagementGUI {
     private void showLogin() {
         frame = new JFrame("校園活動管理系統 - 登入");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel panel = new JPanel(new FlowLayout());
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.anchor = GridBagConstraints.CENTER;
 
         JLabel idLabel = new JLabel("使用者ID：");
-        idLabel.setFont(idLabel.getFont().deriveFont(idLabel.getFont().getSize() * 1.5f));
-        panel.add(idLabel);
+        idLabel.setFont(scaled(idLabel.getFont(), 1.5f));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        panel.add(idLabel, gbc);
 
-        JTextField idField = new JTextField(15); // 10 * 1.5
-        idField.setFont(idField.getFont().deriveFont(idField.getFont().getSize() * 1.5f));
-        panel.add(idField);
+        JTextField idField = new JTextField(15);
+        idField.setFont(scaled(idField.getFont(), 1.5f));
+        gbc.gridx = 1;
+        panel.add(idField, gbc);
 
         JButton loginButton = new JButton("登入");
         loginButton.setPreferredSize(new Dimension(225, 60));
-        loginButton.setFont(loginButton.getFont().deriveFont(loginButton.getFont().getSize() * 1.5f));
-
-        panel.add(loginButton);
+        loginButton.setFont(scaled(loginButton.getFont(), 1.5f));
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        panel.add(loginButton, gbc);
         loginButton.addActionListener(e -> {
             String id = idField.getText().trim();
             currentUser = manager.getStudent(id);
@@ -61,7 +78,7 @@ public class CampusEventManagementGUI {
         });
         frame.getContentPane().add(panel);
         frame.pack();
-        frame.setSize(1024, 800);
+        frame.setSize(900, 1024);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
@@ -83,20 +100,28 @@ public class CampusEventManagementGUI {
         buttonPanel.add(Box.createVerticalGlue());
 
         JPanel registeredPanel = new JPanel(new BorderLayout());
-        registeredPanel.add(new JLabel("已報名活動", SwingConstants.CENTER), BorderLayout.NORTH);
+        JLabel regLabel = new JLabel("已報名活動", SwingConstants.CENTER);
+        regLabel.setFont(scaled(regLabel.getFont(), 1.2f));
+        registeredPanel.add(regLabel, BorderLayout.NORTH);
         String[] cols = {"ID", "名稱", "地點", "時間", "人數"};
         DefaultTableModel regModel = new DefaultTableModel(cols, 0) {
             public boolean isCellEditable(int r, int c) { return false; }
         };
         JTable registeredTable = new JTable(regModel);
+        registeredTable.setFont(scaled(registeredTable.getFont(), 1.2f));
+        registeredTable.getTableHeader().setFont(scaled(registeredTable.getTableHeader().getFont(), 1.2f));
         registeredPanel.add(new JScrollPane(registeredTable), BorderLayout.CENTER);
 
         JPanel allPanel = new JPanel(new BorderLayout());
-        allPanel.add(new JLabel("所有活動", SwingConstants.CENTER), BorderLayout.NORTH);
+        JLabel allLabel = new JLabel("所有活動", SwingConstants.CENTER);
+        allLabel.setFont(scaled(allLabel.getFont(), 1.2f));
+        allPanel.add(allLabel, BorderLayout.NORTH);
         DefaultTableModel allModel = new DefaultTableModel(cols, 0) {
             public boolean isCellEditable(int r, int c) { return false; }
         };
         JTable allTable = new JTable(allModel);
+        allTable.setFont(scaled(allTable.getFont(), 1.2f));
+        allTable.getTableHeader().setFont(scaled(allTable.getTableHeader().getFont(), 1.2f));
         allPanel.add(new JScrollPane(allTable), BorderLayout.CENTER);
 
         JPanel rightPanel = new JPanel(new GridLayout(2,1));
@@ -143,7 +168,7 @@ public class CampusEventManagementGUI {
         refreshStudentTables(student, regModel, allModel);
         frame.getContentPane().add(split);
         frame.pack();
-        frame.setSize(1024, 800);
+        frame.setSize(900, 1024);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
@@ -162,12 +187,16 @@ public class CampusEventManagementGUI {
         buttonPanel.add(Box.createVerticalGlue());
 
         JPanel rightPanel = new JPanel(new BorderLayout());
-        rightPanel.add(new JLabel("我的活動", SwingConstants.CENTER), BorderLayout.NORTH);
+        JLabel hostLabel = new JLabel("我的活動", SwingConstants.CENTER);
+        hostLabel.setFont(scaled(hostLabel.getFont(), 1.2f));
+        rightPanel.add(hostLabel, BorderLayout.NORTH);
         String[] cols = {"ID", "名稱", "地點", "時間", "人數"};
         DefaultTableModel hostModel = new DefaultTableModel(cols, 0) {
             public boolean isCellEditable(int r, int c) { return false; }
         };
         JTable hostedTable = new JTable(hostModel);
+        hostedTable.setFont(scaled(hostedTable.getFont(), 1.2f));
+        hostedTable.getTableHeader().setFont(scaled(hostedTable.getTableHeader().getFont(), 1.2f));
         rightPanel.add(new JScrollPane(hostedTable), BorderLayout.CENTER);
 
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, buttonPanel, rightPanel);
@@ -187,7 +216,7 @@ public class CampusEventManagementGUI {
         refreshOrganizerTable(org, hostModel);
         frame.getContentPane().add(split);
         frame.pack();
-        frame.setSize(1024, 800);
+        frame.setSize(900, 1024);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
@@ -198,12 +227,27 @@ public class CampusEventManagementGUI {
         JTextField locationField = new JTextField();
         JTextField timeField = new JTextField();
         JTextField capacityField = new JTextField();
+        JLabel idLabel = new JLabel("ID：");
+        JLabel titleLabel = new JLabel("標題：");
+        JLabel locLabel = new JLabel("地點：");
+        JLabel timeLabel = new JLabel("時間：");
+        JLabel capLabel = new JLabel("名額：");
+        idLabel.setFont(scaled(idLabel.getFont(), 1.2f));
+        titleLabel.setFont(scaled(titleLabel.getFont(), 1.2f));
+        locLabel.setFont(scaled(locLabel.getFont(), 1.2f));
+        timeLabel.setFont(scaled(timeLabel.getFont(), 1.2f));
+        capLabel.setFont(scaled(capLabel.getFont(), 1.2f));
+        idField.setFont(scaled(idField.getFont(), 1.2f));
+        titleField.setFont(scaled(titleField.getFont(), 1.2f));
+        locationField.setFont(scaled(locationField.getFont(), 1.2f));
+        timeField.setFont(scaled(timeField.getFont(), 1.2f));
+        capacityField.setFont(scaled(capacityField.getFont(), 1.2f));
         Object[] message = {
-                "ID：", idField,
-                "標題：", titleField,
-                "地點：", locationField,
-                "時間：", timeField,
-                "名額：", capacityField
+                idLabel, idField,
+                titleLabel, titleField,
+                locLabel, locationField,
+                timeLabel, timeField,
+                capLabel, capacityField
         };
         int option = JOptionPane.showConfirmDialog(frame, message, "建立活動", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
