@@ -58,13 +58,13 @@ public class CampusEventManagementGUI {
         JButton loginButton = new JButton("登入");
         loginButton.setPreferredSize(new Dimension(225, 60));
         loginButton.setFont(scaled(loginButton.getFont(), 1.5f));
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 2;
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
         gbc.weightx = 0;
         gbc.weighty = 0;
         gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.anchor = GridBagConstraints.WEST;
         panel.add(loginButton, gbc);
         loginButton.addActionListener(e -> {
             String id = idField.getText().trim();
