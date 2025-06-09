@@ -133,7 +133,6 @@ public class CampusEventManagementGUI {
             frame.dispose();
             showLogin();
         });
-
         refreshStudentTables(student, regModel, allModel);
         frame.getContentPane().add(split);
         frame.pack();
