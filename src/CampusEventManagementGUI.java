@@ -15,7 +15,7 @@ public class CampusEventManagementGUI {
         btn.setFocusPainted(false);
         btn.setBorder(new LineBorder(Color.GRAY, 1, true));
         btn.setPreferredSize(new Dimension(150, 100));
-        btn.setMaximumSize(new Dimension(150, 100));
+        btn.setMaximumSize(new Dimension(250, 100));
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         return btn;
     }
@@ -40,6 +40,7 @@ public class CampusEventManagementGUI {
         JButton loginButton = new JButton("登入");
         loginButton.setPreferredSize(new Dimension(225, 60));
         loginButton.setFont(loginButton.getFont().deriveFont(loginButton.getFont().getSize() * 1.5f));
+
         panel.add(loginButton);
         loginButton.addActionListener(e -> {
             String id = idField.getText().trim();
