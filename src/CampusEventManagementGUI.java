@@ -25,6 +25,7 @@ public class CampusEventManagementGUI {
     private void showLogin() {
         frame = new JFrame("校園活動管理系統 - 登入");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new GridBagLayout());
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout());
         panel.add(new JLabel("使用者ID："));
@@ -51,7 +52,7 @@ public class CampusEventManagementGUI {
         });
         frame.getContentPane().add(panel);
         frame.pack();
-        frame.setSize(900, 1024);
+        frame.setSize(1024, 900);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
@@ -59,24 +60,47 @@ public class CampusEventManagementGUI {
     private void showStudentMenu(Student student) {
         frame = new JFrame("學生選單 - " + student.getName());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         JButton viewBtn = createButton("查看活動");
         JButton registerBtn = createButton("報名活動");
         JButton cancelBtn = createButton("取消報名");
         JButton myBtn = createButton("我的活動");
         JButton logoutBtn = createButton("登出");
-        panel.add(viewBtn);
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(registerBtn);
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(cancelBtn);
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(myBtn);
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(logoutBtn);
+        buttonPanel.add(viewBtn);
+        buttonPanel.add(Box.createVerticalStrut(10));
+        buttonPanel.add(registerBtn);
+        buttonPanel.add(Box.createVerticalStrut(10));
+        buttonPanel.add(cancelBtn);
+        buttonPanel.add(Box.createVerticalStrut(10));
+        buttonPanel.add(myBtn);
+        buttonPanel.add(Box.createVerticalStrut(10));
+        buttonPanel.add(logoutBtn);
 
-        viewBtn.addActionListener(e -> showAllEvents());
+        JPanel registeredPanel = new JPanel(new BorderLayout());
+        registeredPanel.add(new JLabel("已報名活動", SwingConstants.CENTER), BorderLayout.NORTH);
+        JTextArea registeredArea = new JTextArea();
+        registeredArea.setEditable(false);
+        registeredPanel.add(new JScrollPane(registeredArea), BorderLayout.CENTER);
+
+        JPanel allPanel = new JPanel(new BorderLayout());
+        allPanel.add(new JLabel("所有活動", SwingConstants.CENTER), BorderLayout.NORTH);
+        JTextArea allArea = new JTextArea();
+        allArea.setEditable(false);
+        allPanel.add(new JScrollPane(allArea), BorderLayout.CENTER);
+
+        JPanel rightPanel = new JPanel(new GridLayout(2,1));
+        rightPanel.add(registeredPanel);
+        rightPanel.add(allPanel);
+
+        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, buttonPanel, rightPanel);
+        split.setResizeWeight(0);
+        split.setEnabled(false);
+
+        viewBtn.addActionListener(e -> {
+            showAllEvents();
+            refreshStudentAreas(student, registeredArea, allArea);
+        });
         registerBtn.addActionListener(e -> {
             String eventId = JOptionPane.showInputDialog(frame, "輸入要報名的活動ID：");
             if (eventId != null) {
@@ -85,6 +109,7 @@ public class CampusEventManagementGUI {
                         .findFirst().orElse(null);
                 if (ev != null) {
                     student.registerEvent(ev);
+                    refreshStudentAreas(student, registeredArea, allArea);
                 } else {
                     JOptionPane.showMessageDialog(frame, "找不到活動");
                 }
@@ -98,6 +123,7 @@ public class CampusEventManagementGUI {
                         .findFirst().orElse(null);
                 if (ev != null) {
                     student.cancelEvent(ev);
+                    refreshStudentAreas(student, registeredArea, allArea);
                 } else {
                     JOptionPane.showMessageDialog(frame, "在你的報名中找不到此活動");
                 }
@@ -116,9 +142,10 @@ public class CampusEventManagementGUI {
             showLogin();
         });
 
-        frame.getContentPane().add(panel);
+        refreshStudentAreas(student, registeredArea, allArea);
+        frame.getContentPane().add(split);
         frame.pack();
-        frame.setSize(900, 1024);
+        frame.setSize(1024, 900);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
@@ -126,24 +153,38 @@ public class CampusEventManagementGUI {
     private void showOrganizerMenu(Organizer org) {
         frame = new JFrame("主辦者選單 - " + org.getName());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         JButton createBtn = createButton("建立活動");
         JButton viewBtn = createButton("查看我的活動");
         JButton logoutBtn = createButton("登出");
-        panel.add(createBtn);
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(viewBtn);
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(logoutBtn);
+        buttonPanel.add(createBtn);
+        buttonPanel.add(Box.createVerticalStrut(10));
+        buttonPanel.add(viewBtn);
+        buttonPanel.add(Box.createVerticalStrut(10));
+        buttonPanel.add(logoutBtn);
 
-        createBtn.addActionListener(e -> createEvent(org));
+        JPanel rightPanel = new JPanel(new BorderLayout());
+        rightPanel.add(new JLabel("我的活動", SwingConstants.CENTER), BorderLayout.NORTH);
+        JTextArea hostedArea = new JTextArea();
+        hostedArea.setEditable(false);
+        rightPanel.add(new JScrollPane(hostedArea), BorderLayout.CENTER);
+
+        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, buttonPanel, rightPanel);
+        split.setResizeWeight(0);
+        split.setEnabled(false);
+
+        createBtn.addActionListener(e -> {
+            createEvent(org);
+            refreshOrganizerArea(org, hostedArea);
+        });
         viewBtn.addActionListener(e -> {
             String msg = org.getHostedEvents().stream()
                     .map(ev -> String.format("%s: %s 在 %s %s (%d/%d)", ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size(), ev.getCapacity()))
                     .collect(Collectors.joining("\n"));
             if (msg.isEmpty()) msg = "沒有活動。";
             JOptionPane.showMessageDialog(frame, msg);
+            refreshOrganizerArea(org, hostedArea);
         });
         logoutBtn.addActionListener(e -> {
             manager.saveEvents();
@@ -151,9 +192,10 @@ public class CampusEventManagementGUI {
             showLogin();
         });
 
-        frame.getContentPane().add(panel);
+        refreshOrganizerArea(org, hostedArea);
+        frame.getContentPane().add(split);
         frame.pack();
-        frame.setSize(900, 1024);
+        frame.setSize(1024, 900);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
@@ -182,6 +224,28 @@ public class CampusEventManagementGUI {
                 JOptionPane.showMessageDialog(frame, "名額無效");
             }
         }
+    }
+
+    private void refreshStudentAreas(Student student, JTextArea regArea, JTextArea allArea) {
+        String msg = student.getRegisteredEvents().stream()
+                .map(ev -> String.format("%s: %s 在 %s %s", ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime()))
+                .collect(Collectors.joining("\n"));
+        if (msg.isEmpty()) msg = "沒有任何報名。";
+        regArea.setText(msg);
+
+        String all = manager.getAllEvents().stream()
+                .map(ev -> String.format("%s: %s 在 %s %s (%d/%d)", ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size(), ev.getCapacity()))
+                .collect(Collectors.joining("\n"));
+        if (all.isEmpty()) all = "沒有活動。";
+        allArea.setText(all);
+    }
+
+    private void refreshOrganizerArea(Organizer org, JTextArea area) {
+        String msg = org.getHostedEvents().stream()
+                .map(ev -> String.format("%s: %s 在 %s %s (%d/%d)", ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size(), ev.getCapacity()))
+                .collect(Collectors.joining("\n"));
+        if (msg.isEmpty()) msg = "沒有活動。";
+        area.setText(msg);
     }
 
     private void showAllEvents() {
