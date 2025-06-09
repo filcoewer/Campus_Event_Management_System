@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.util.stream.Collectors;
 
 public class CampusEventManagementGUI {
@@ -23,6 +24,23 @@ public class CampusEventManagementGUI {
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn.setFont(scaled(btn.getFont(), 1.5f));
         return btn;
+    }
+
+    private static class StatusRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                       boolean isSelected, boolean hasFocus,
+                                                       int row, int column) {
+            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if ("開放中".equals(value)) {
+                c.setForeground(Color.GREEN.darker());
+            } else if ("額滿".equals(value)) {
+                c.setForeground(Color.RED);
+            } else {
+                c.setForeground(isSelected ? table.getSelectionForeground() : Color.BLACK);
+            }
+            return c;
+        }
     }
 
     public static void main(String[] args) {
@@ -72,13 +90,13 @@ public class CampusEventManagementGUI {
         JButton loginButton = new JButton("登入");
         loginButton.setPreferredSize(new Dimension(225, 60));
         loginButton.setFont(scaled(loginButton.getFont(), 1.5f));
-        gbc.gridx = 2;
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
         gbc.weightx = 0;
         gbc.weighty = 0;
         gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.WEST;
+        gbc.anchor = GridBagConstraints.CENTER;
         panel.add(loginButton, gbc);
         loginButton.addActionListener(e -> {
             String id = idField.getText().trim();
@@ -135,6 +153,7 @@ public class CampusEventManagementGUI {
         JTable registeredTable = new JTable(regModel);
         registeredTable.setFont(scaled(registeredTable.getFont(), 1.2f));
         registeredTable.getTableHeader().setFont(scaled(registeredTable.getTableHeader().getFont(), 1.2f));
+        registeredTable.getColumnModel().getColumn(5).setCellRenderer(new StatusRenderer());
         registeredPanel.add(new JScrollPane(registeredTable), BorderLayout.CENTER);
 
         JPanel allPanel = new JPanel(new BorderLayout());
@@ -147,6 +166,7 @@ public class CampusEventManagementGUI {
         JTable allTable = new JTable(allModel);
         allTable.setFont(scaled(allTable.getFont(), 1.2f));
         allTable.getTableHeader().setFont(scaled(allTable.getTableHeader().getFont(), 1.2f));
+        allTable.getColumnModel().getColumn(5).setCellRenderer(new StatusRenderer());
         allPanel.add(new JScrollPane(allTable), BorderLayout.CENTER);
 
         JPanel rightPanel = new JPanel(new GridLayout(2,1));
@@ -246,6 +266,7 @@ public class CampusEventManagementGUI {
         JTable hostedTable = new JTable(hostModel);
         hostedTable.setFont(scaled(hostedTable.getFont(), 1.2f));
         hostedTable.getTableHeader().setFont(scaled(hostedTable.getTableHeader().getFont(), 1.2f));
+        hostedTable.getColumnModel().getColumn(5).setCellRenderer(new StatusRenderer());
         rightPanel.add(new JScrollPane(hostedTable), BorderLayout.CENTER);
 
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, buttonPanel, rightPanel);
