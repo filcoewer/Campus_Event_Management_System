@@ -47,7 +47,7 @@ public class CampusEventManagementGUI {
         panel.add(idLabel, gbc);
 
         JTextField idField = new JTextField();
-        idField.setPreferredSize(new Dimension(400, 40));
+        idField.setPreferredSize(new Dimension(50, 40));
         idField.setFont(scaled(idField.getFont(), 1.5f));
         gbc.gridx = 1;
         gbc.weightx = 1;
