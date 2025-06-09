@@ -46,7 +46,8 @@ public class CampusEventManagementGUI {
         gbc.anchor = GridBagConstraints.EAST;
         panel.add(idLabel, gbc);
 
-        JTextField idField = new JTextField(15);
+        JTextField idField = new JTextField();
+        idField.setPreferredSize(new Dimension(400, 40));
         idField.setFont(scaled(idField.getFont(), 1.5f));
         gbc.gridx = 1;
         gbc.weightx = 1;
