@@ -116,7 +116,7 @@ public class CampusEventManagementSystem {
             case "2":
                 for (Event event : org.getHostedEvents().stream()
                         .sorted(Event.STATUS_DATE_COMPARATOR)
-                        .toList()) {
+                        .collect(java.util.stream.Collectors.toList())) {
                     System.out.printf("%s: %s at %s %s (%d/%d) [%s]\n",
                             event.getId(), event.getTitle(), event.getLocation(), event.getTime(),
                             event.getParticipants().size(), event.getCapacity(), event.getStatus());

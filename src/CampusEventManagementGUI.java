@@ -329,7 +329,7 @@ public class CampusEventManagementGUI {
         regModel.setRowCount(0);
         for (Event ev : student.getRegisteredEvents().stream()
                 .sorted(Event.STATUS_DATE_COMPARATOR)
-                .toList()) {
+                .collect(java.util.stream.Collectors.toList())) {
             regModel.addRow(new Object[]{ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size() + "/" + ev.getCapacity(), ev.getStatus()});
         }
         allModel.setRowCount(0);
@@ -342,7 +342,7 @@ public class CampusEventManagementGUI {
         model.setRowCount(0);
         for (Event ev : org.getHostedEvents().stream()
                 .sorted(Event.STATUS_DATE_COMPARATOR)
-                .toList()) {
+                .collect(java.util.stream.Collectors.toList())) {
             model.addRow(new Object[]{ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size() + "/" + ev.getCapacity(), ev.getStatus()});
         }
     }
