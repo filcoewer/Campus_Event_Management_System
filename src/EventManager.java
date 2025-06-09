@@ -64,12 +64,18 @@ public class EventManager {
                 String title = parts[1];
                 String location = parts[2];
                 String time = parts[3];
-                int capacity = Integer.parseInt(parts[4]);
+                int capacity;
+                try {
+                    capacity = Integer.parseInt(parts[4]);
+                } catch (NumberFormatException ex) {
+                    continue; // ignore malformed line
+                }
                 String organizerId = parts[5];
                 Organizer organizer = organizers.get(organizerId);
                 if (organizer != null) {
                     Event event = new Event(id, title, location, time, capacity, organizer);
                     events.put(id, event);
+                    organizer.getHostedEvents().add(event);
                 }
             }
         } catch (IOException e) {
