@@ -14,12 +14,35 @@ public class Organizer extends User {
         return e;
     }
 
+    public void editEvent(Event e, String title, String location, String time, int capacity) {
+        if (hostedEvents.contains(e)) {
+            e.edit(title, location, time, capacity);
+            System.out.println("Event updated.");
+        } else {
+            System.out.println("Event not found");
+        }
+    }
+
+    public void listParticipants(Event e) {
+        if (!hostedEvents.contains(e)) {
+            System.out.println("Event not found");
+            return;
+        }
+        if (e.getParticipants().isEmpty()) {
+            System.out.println("No participants.");
+        } else {
+            for (Student s : e.getParticipants()) {
+                System.out.println(s.getName() + " (" + s.getId() + ")");
+            }
+        }
+    }
+
     public List<Event> getHostedEvents() {
         return hostedEvents;
     }
 
     @Override
     public void displayMenu() {
-        System.out.println("1. Create Event\n2. View My Events\n0. Logout");
+        System.out.println("1. Create Event\n2. View My Events\n3. Edit Event\n4. View Participants\n0. Logout");
     }
 }
