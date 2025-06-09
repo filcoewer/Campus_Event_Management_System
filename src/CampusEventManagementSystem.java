@@ -91,7 +91,13 @@ public class CampusEventManagementSystem {
                 System.out.print("Time: ");
                 String time = scanner.nextLine();
                 System.out.print("Capacity: ");
-                int capacity = Integer.parseInt(scanner.nextLine());
+                int capacity;
+                try {
+                    capacity = Integer.parseInt(scanner.nextLine());
+                } catch (NumberFormatException ex) {
+                    System.out.println("Invalid capacity");
+                    return;
+                }
                 Event e = org.createEvent(id, title, location, time, capacity);
                 manager.addEvent(e);
                 System.out.println("Event created.");
