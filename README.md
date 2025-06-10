@@ -28,3 +28,4 @@ Features:
 - Event status shows whether an event is open, full, or ended
 - Events are listed with open events first, then full, then ended, sorted by date
   and finished events cannot be registered or canceled
+- Only the organizer who created an event can edit it

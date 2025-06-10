@@ -15,6 +15,10 @@ public class Organizer extends User {
     }
 
     public void editEvent(Event e, String title, String location, String time, int capacity) {
+        if (e.getOrganizer() != this) {
+            System.out.println("You are not the organizer of this event");
+            return;
+        }
         if (hostedEvents.contains(e)) {
             e.edit(title, location, time, capacity);
             System.out.println("Event updated.");
