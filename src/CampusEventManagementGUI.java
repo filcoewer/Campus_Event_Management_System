@@ -146,14 +146,14 @@ public class CampusEventManagementGUI {
         JLabel regLabel = new JLabel("已報名活動", SwingConstants.CENTER);
         regLabel.setFont(scaled(regLabel.getFont(), 1.2f));
         registeredPanel.add(regLabel, BorderLayout.NORTH);
-        String[] cols = {"ID", "名稱", "地點", "時間", "人數", "狀態"};
+        String[] cols = {"ID", "名稱", "地點", "開始時間", "結束時間", "人數", "狀態"};
         DefaultTableModel regModel = new DefaultTableModel(cols, 0) {
             public boolean isCellEditable(int r, int c) { return false; }
         };
         JTable registeredTable = new JTable(regModel);
         registeredTable.setFont(scaled(registeredTable.getFont(), 1.2f));
         registeredTable.getTableHeader().setFont(scaled(registeredTable.getTableHeader().getFont(), 1.2f));
-        registeredTable.getColumnModel().getColumn(5).setCellRenderer(new StatusRenderer());
+        registeredTable.getColumnModel().getColumn(6).setCellRenderer(new StatusRenderer());
         registeredPanel.add(new JScrollPane(registeredTable), BorderLayout.CENTER);
 
         JPanel allPanel = new JPanel(new BorderLayout());
@@ -166,7 +166,7 @@ public class CampusEventManagementGUI {
         JTable allTable = new JTable(allModel);
         allTable.setFont(scaled(allTable.getFont(), 1.2f));
         allTable.getTableHeader().setFont(scaled(allTable.getTableHeader().getFont(), 1.2f));
-        allTable.getColumnModel().getColumn(5).setCellRenderer(new StatusRenderer());
+        allTable.getColumnModel().getColumn(6).setCellRenderer(new StatusRenderer());
         allPanel.add(new JScrollPane(allTable), BorderLayout.CENTER);
 
         JPanel rightPanel = new JPanel(new GridLayout(2,1));
@@ -181,8 +181,8 @@ public class CampusEventManagementGUI {
             if (q != null) {
                 java.util.List<Event> result = manager.searchEvents(q);
                 String msg = result.stream()
-                        .map(ev -> String.format("%s: %s 在 %s %s (%d/%d) [%s]",
-                                ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(),
+                        .map(ev -> String.format("%s: %s 在 %s %s 至 %s (%d/%d) [%s]",
+                                ev.getId(), ev.getTitle(), ev.getLocation(), ev.getStartTime(), ev.getEndTime(),
                                 ev.getParticipants().size(), ev.getCapacity(), ev.getStatus()))
                         .collect(Collectors.joining("\n"));
                 if (msg.isEmpty()) msg = "沒有符合的活動。";
@@ -264,14 +264,14 @@ public class CampusEventManagementGUI {
         JLabel hostLabel = new JLabel("我的活動", SwingConstants.CENTER);
         hostLabel.setFont(scaled(hostLabel.getFont(), 1.2f));
         rightPanel.add(hostLabel, BorderLayout.NORTH);
-        String[] cols = {"ID", "名稱", "地點", "時間", "人數", "狀態"};
+        String[] cols = {"ID", "名稱", "地點", "開始時間", "結束時間", "人數", "狀態"};
         DefaultTableModel hostModel = new DefaultTableModel(cols, 0) {
             public boolean isCellEditable(int r, int c) { return false; }
         };
         JTable hostedTable = new JTable(hostModel);
         hostedTable.setFont(scaled(hostedTable.getFont(), 1.2f));
         hostedTable.getTableHeader().setFont(scaled(hostedTable.getTableHeader().getFont(), 1.2f));
-        hostedTable.getColumnModel().getColumn(5).setCellRenderer(new StatusRenderer());
+        hostedTable.getColumnModel().getColumn(6).setCellRenderer(new StatusRenderer());
         rightPanel.add(new JScrollPane(hostedTable), BorderLayout.CENTER);
 
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, buttonPanel, rightPanel);
@@ -442,11 +442,11 @@ public class CampusEventManagementGUI {
         for (Event ev : student.getRegisteredEvents().stream()
                 .sorted(Event.STATUS_DATE_COMPARATOR)
                 .collect(java.util.stream.Collectors.toList())) {
-            regModel.addRow(new Object[]{ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size() + "/" + ev.getCapacity(), ev.getStatus()});
+            regModel.addRow(new Object[]{ev.getId(), ev.getTitle(), ev.getLocation(), ev.getStartTime(), ev.getEndTime(), ev.getParticipants().size() + "/" + ev.getCapacity(), ev.getStatus()});
         }
         allModel.setRowCount(0);
         for (Event ev : manager.getSortedEvents()) {
-            allModel.addRow(new Object[]{ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size() + "/" + ev.getCapacity(), ev.getStatus()});
+            allModel.addRow(new Object[]{ev.getId(), ev.getTitle(), ev.getLocation(), ev.getStartTime(), ev.getEndTime(), ev.getParticipants().size() + "/" + ev.getCapacity(), ev.getStatus()});
         }
     }
 
@@ -455,13 +455,13 @@ public class CampusEventManagementGUI {
         for (Event ev : org.getHostedEvents().stream()
                 .sorted(Event.STATUS_DATE_COMPARATOR)
                 .collect(java.util.stream.Collectors.toList())) {
-            model.addRow(new Object[]{ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size() + "/" + ev.getCapacity(), ev.getStatus()});
+            model.addRow(new Object[]{ev.getId(), ev.getTitle(), ev.getLocation(), ev.getStartTime(), ev.getEndTime(), ev.getParticipants().size() + "/" + ev.getCapacity(), ev.getStatus()});
         }
     }
 
     private void showAllEvents() {
         String msg = manager.getSortedEvents().stream()
-                .map(ev -> String.format("%s: %s 在 %s %s (%d/%d) [%s]", ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(), ev.getParticipants().size(), ev.getCapacity(), ev.getStatus()))
+                .map(ev -> String.format("%s: %s 在 %s %s 至 %s (%d/%d) [%s]", ev.getId(), ev.getTitle(), ev.getLocation(), ev.getStartTime(), ev.getEndTime(), ev.getParticipants().size(), ev.getCapacity(), ev.getStatus()))
                 .collect(Collectors.joining("\n"));
         if (msg.isEmpty()) msg = "沒有活動。";
         JOptionPane.showMessageDialog(frame, msg);

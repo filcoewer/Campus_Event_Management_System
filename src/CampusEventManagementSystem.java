@@ -48,16 +48,16 @@ public class CampusEventManagementSystem {
         switch (choice) {
             case "1":
                 manager.getSortedEvents().stream()
-                        .forEach(e -> System.out.printf("%s: %s at %s %s (%d/%d) [%s]\n",
-                                e.getId(), e.getTitle(), e.getLocation(), e.getTime(),
+                        .forEach(e -> System.out.printf("%s: %s at %s %s to %s (%d/%d) [%s]\n",
+                                e.getId(), e.getTitle(), e.getLocation(), e.getStartTime(), e.getEndTime(),
                                 e.getParticipants().size(), e.getCapacity(), e.getStatus()));
                 break;
             case "2":
                 System.out.print("Keyword or date (YYYY-MM-DD): ");
                 String query = scanner.nextLine();
                 manager.searchEvents(query).forEach(ev ->
-                        System.out.printf("%s: %s at %s %s (%d/%d) [%s]\n",
-                                ev.getId(), ev.getTitle(), ev.getLocation(), ev.getTime(),
+                        System.out.printf("%s: %s at %s %s to %s (%d/%d) [%s]\n",
+                                ev.getId(), ev.getTitle(), ev.getLocation(), ev.getStartTime(), ev.getEndTime(),
                                 ev.getParticipants().size(), ev.getCapacity(), ev.getStatus()));
                 break;
             case "3":
@@ -90,7 +90,7 @@ public class CampusEventManagementSystem {
                 break;
             case "5":
                 for (Event reg : student.getRegisteredEvents()) {
-                    System.out.printf("%s: %s at %s %s\n", reg.getId(), reg.getTitle(), reg.getLocation(), reg.getTime());
+                    System.out.printf("%s: %s at %s %s to %s\n", reg.getId(), reg.getTitle(), reg.getLocation(), reg.getStartTime(), reg.getEndTime());
                 }
                 break;
             default:
@@ -140,8 +140,8 @@ public class CampusEventManagementSystem {
                 for (Event event : org.getHostedEvents().stream()
                         .sorted(Event.STATUS_DATE_COMPARATOR)
                         .collect(java.util.stream.Collectors.toList())) {
-                    System.out.printf("%s: %s at %s %s (%d/%d) [%s]\n",
-                            event.getId(), event.getTitle(), event.getLocation(), event.getTime(),
+                    System.out.printf("%s: %s at %s %s to %s (%d/%d) [%s]\n",
+                            event.getId(), event.getTitle(), event.getLocation(), event.getStartTime(), event.getEndTime(),
                             event.getParticipants().size(), event.getCapacity(), event.getStatus());
                 }
                 break;
