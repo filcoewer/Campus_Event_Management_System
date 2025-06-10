@@ -247,10 +247,13 @@ public class CampusEventManagementGUI {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         JButton createBtn = createButton("建立活動");
+        JButton editBtn = createButton("編輯活動");
         JButton exportBtn = createButton("匯出名單");
         JButton logoutBtn = createButton("登出");
         buttonPanel.add(Box.createVerticalGlue());
         buttonPanel.add(createBtn);
+        buttonPanel.add(Box.createVerticalStrut(20));
+        buttonPanel.add(editBtn);
         buttonPanel.add(Box.createVerticalStrut(20));
         buttonPanel.add(exportBtn);
         buttonPanel.add(Box.createVerticalStrut(20));
@@ -278,6 +281,20 @@ public class CampusEventManagementGUI {
         createBtn.addActionListener(e -> {
             createEvent(org);
             refreshOrganizerTable(org, hostModel);
+        });
+        editBtn.addActionListener(e -> {
+            String eventId = JOptionPane.showInputDialog(frame, "輸入要編輯的活動ID：");
+            if (eventId != null) {
+                Event ev = org.getHostedEvents().stream()
+                        .filter(evnt -> evnt.getId().equals(eventId))
+                        .findFirst().orElse(null);
+                if (ev != null) {
+                    editEvent(org, ev);
+                    refreshOrganizerTable(org, hostModel);
+                } else {
+                    JOptionPane.showMessageDialog(frame, "找不到活動");
+                }
+            }
         });
         exportBtn.addActionListener(e -> {
             String eventId = JOptionPane.showInputDialog(frame, "輸入活動ID以匯出名單：");
@@ -353,6 +370,51 @@ public class CampusEventManagementGUI {
                 Event e = org.createEvent(idField.getText().trim(), titleField.getText().trim(), locationField.getText().trim(), dateStr, capacity);
                 manager.addEvent(e);
                 JOptionPane.showMessageDialog(frame, "活動已建立。");
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(frame, "名額無效");
+            }
+        }
+    }
+
+    private void editEvent(Organizer org, Event ev) {
+        JTextField titleField = new JTextField(ev.getTitle());
+        JTextField locationField = new JTextField(ev.getLocation());
+        JTextField timeField = new JTextField(ev.getTime());
+        JTextField capacityField = new JTextField(Integer.toString(ev.getCapacity()));
+        JLabel titleLabel = new JLabel("標題：");
+        JLabel locLabel = new JLabel("地點：");
+        JLabel timeLabel = new JLabel("時間：");
+        JLabel capLabel = new JLabel("名額：");
+        titleLabel.setFont(scaled(titleLabel.getFont(), 1.2f));
+        locLabel.setFont(scaled(locLabel.getFont(), 1.2f));
+        timeLabel.setFont(scaled(timeLabel.getFont(), 1.2f));
+        capLabel.setFont(scaled(capLabel.getFont(), 1.2f));
+        titleField.setFont(scaled(titleField.getFont(), 1.2f));
+        locationField.setFont(scaled(locationField.getFont(), 1.2f));
+        timeField.setFont(scaled(timeField.getFont(), 1.2f));
+        capacityField.setFont(scaled(capacityField.getFont(), 1.2f));
+        Object[] message = {
+                titleLabel, titleField,
+                locLabel, locationField,
+                timeLabel, timeField,
+                capLabel, capacityField
+        };
+        int option = JOptionPane.showConfirmDialog(frame, message, "編輯活動", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            try {
+                int capacity = Integer.parseInt(capacityField.getText().trim());
+                String dateStr = timeField.getText().trim();
+                try {
+                    java.time.LocalDate date = java.time.LocalDate.parse(dateStr);
+                    if (date.isBefore(java.time.LocalDate.now())) {
+                        JOptionPane.showMessageDialog(frame, "日期無效");
+                        return;
+                    }
+                } catch (java.time.format.DateTimeParseException ex) {
+                    JOptionPane.showMessageDialog(frame, "日期無效");
+                    return;
+                }
+                org.editEvent(ev, titleField.getText().trim(), locationField.getText().trim(), dateStr, capacity);
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(frame, "名額無效");
             }

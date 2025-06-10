@@ -18,7 +18,7 @@ java -cp src CampusEventManagementGUI
 
 Sample accounts (passwords in users.csv):
 ```
-Organizer: org1 / pass1
+Organizers: org1 / pass1, org2 / pass2
 Students: stu1 / p1, stu2 / p2
 ```
 
