@@ -48,7 +48,8 @@ public class EventManager {
                 .filter(ev -> {
                     if (date != null) {
                         try {
-                            return java.time.LocalDate.parse(ev.getTime()).equals(date);
+                            java.time.LocalDate d = java.time.LocalDate.parse(ev.getStartTime().substring(0, 10));
+                            return d.equals(date);
                         } catch (java.time.format.DateTimeParseException e) {
                             return false;
                         }
@@ -89,21 +90,22 @@ public class EventManager {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length < 6) continue;
+                if (parts.length < 7) continue;
                 String id = parts[0];
                 String title = parts[1];
                 String location = parts[2];
-                String time = parts[3];
+                String start = parts[3];
+                String end = parts[4];
                 int capacity;
                 try {
-                    capacity = Integer.parseInt(parts[4]);
+                    capacity = Integer.parseInt(parts[5]);
                 } catch (NumberFormatException ex) {
                     continue; // ignore malformed line
                 }
-                String organizerId = parts[5];
+                String organizerId = parts[6];
                 Organizer organizer = organizers.get(organizerId);
                 if (organizer != null) {
-                    Event event = new Event(id, title, location, time, capacity, organizer);
+                    Event event = new Event(id, title, location, start, end, capacity, organizer);
                     events.put(id, event);
                     organizer.getHostedEvents().add(event);
                 }
@@ -116,7 +118,10 @@ public class EventManager {
     public void saveEvents() {
         try (PrintWriter pw = new PrintWriter(new FileWriter(EVENTS_FILE))) {
             for (Event e : events.values()) {
-                pw.printf("%s,%s,%s,%s,%d,%s%n", e.getId(), e.getTitle(), e.getLocation(), e.getTime(), e.getCapacity(), e.getOrganizer().getId());
+                pw.printf("%s,%s,%s,%s,%s,%d,%s%n",
+                        e.getId(), e.getTitle(), e.getLocation(),
+                        e.getStartTime(), e.getEndTime(),
+                        e.getCapacity(), e.getOrganizer().getId());
             }
         } catch (IOException e) {
             e.printStackTrace();

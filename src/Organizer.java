@@ -8,19 +8,19 @@ public class Organizer extends User {
         super(id, name, password);
     }
 
-    public Event createEvent(String id, String title, String location, String time, int capacity) {
-        Event e = new Event(id, title, location, time, capacity, this);
+    public Event createEvent(String id, String title, String location, String startTime, String endTime, int capacity) {
+        Event e = new Event(id, title, location, startTime, endTime, capacity, this);
         hostedEvents.add(e);
         return e;
     }
 
-    public void editEvent(Event e, String title, String location, String time, int capacity) {
+    public void editEvent(Event e, String title, String location, String startTime, String endTime, int capacity) {
         if (e.getOrganizer() != this) {
             System.out.println("You are not the organizer of this event");
             return;
         }
         if (hostedEvents.contains(e)) {
-            e.edit(title, location, time, capacity);
+            e.edit(title, location, startTime, endTime, capacity);
             System.out.println("Event updated.");
         } else {
             System.out.println("Event not found");

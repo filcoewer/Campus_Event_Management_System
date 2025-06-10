@@ -28,4 +28,5 @@ Features:
 - Event status shows whether an event is open, full, or ended
 - Events are listed with open events first, then full, then ended, sorted by date
   and finished events cannot be registered or canceled
+- Events include a start time and end time in the format `YYYY-MM-DD HH:mm`
 - Only the organizer who created an event can edit it

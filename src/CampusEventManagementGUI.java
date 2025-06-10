@@ -328,38 +328,46 @@ public class CampusEventManagementGUI {
         JTextField idField = new JTextField();
         JTextField titleField = new JTextField();
         JTextField locationField = new JTextField();
-        JTextField timeField = new JTextField();
+        JTextField startField = new JTextField();
+        JTextField endField = new JTextField();
         JTextField capacityField = new JTextField();
         JLabel idLabel = new JLabel("ID：");
         JLabel titleLabel = new JLabel("標題：");
         JLabel locLabel = new JLabel("地點：");
-        JLabel timeLabel = new JLabel("時間：");
+        JLabel startLabel = new JLabel("開始時間：");
+        JLabel endLabel = new JLabel("結束時間：");
         JLabel capLabel = new JLabel("名額：");
         idLabel.setFont(scaled(idLabel.getFont(), 1.2f));
         titleLabel.setFont(scaled(titleLabel.getFont(), 1.2f));
         locLabel.setFont(scaled(locLabel.getFont(), 1.2f));
-        timeLabel.setFont(scaled(timeLabel.getFont(), 1.2f));
+        startLabel.setFont(scaled(startLabel.getFont(), 1.2f));
+        endLabel.setFont(scaled(endLabel.getFont(), 1.2f));
         capLabel.setFont(scaled(capLabel.getFont(), 1.2f));
         idField.setFont(scaled(idField.getFont(), 1.2f));
         titleField.setFont(scaled(titleField.getFont(), 1.2f));
         locationField.setFont(scaled(locationField.getFont(), 1.2f));
-        timeField.setFont(scaled(timeField.getFont(), 1.2f));
+        startField.setFont(scaled(startField.getFont(), 1.2f));
+        endField.setFont(scaled(endField.getFont(), 1.2f));
         capacityField.setFont(scaled(capacityField.getFont(), 1.2f));
         Object[] message = {
                 idLabel, idField,
                 titleLabel, titleField,
                 locLabel, locationField,
-                timeLabel, timeField,
+                startLabel, startField,
+                endLabel, endField,
                 capLabel, capacityField
         };
         int option = JOptionPane.showConfirmDialog(frame, message, "建立活動", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             try {
                 int capacity = Integer.parseInt(capacityField.getText().trim());
-                String dateStr = timeField.getText().trim();
+                String startStr = startField.getText().trim();
+                String endStr = endField.getText().trim();
+                java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
                 try {
-                    java.time.LocalDate date = java.time.LocalDate.parse(dateStr);
-                    if (date.isBefore(java.time.LocalDate.now())) {
+                    java.time.LocalDateTime sdt = java.time.LocalDateTime.parse(startStr, fmt);
+                    java.time.LocalDateTime edt = java.time.LocalDateTime.parse(endStr, fmt);
+                    if (sdt.isAfter(edt) || sdt.isBefore(java.time.LocalDateTime.now())) {
                         JOptionPane.showMessageDialog(frame, "日期無效");
                         return;
                     }
@@ -367,7 +375,7 @@ public class CampusEventManagementGUI {
                     JOptionPane.showMessageDialog(frame, "日期無效");
                     return;
                 }
-                Event e = org.createEvent(idField.getText().trim(), titleField.getText().trim(), locationField.getText().trim(), dateStr, capacity);
+                Event e = org.createEvent(idField.getText().trim(), titleField.getText().trim(), locationField.getText().trim(), startStr, endStr, capacity);
                 manager.addEvent(e);
                 JOptionPane.showMessageDialog(frame, "活動已建立。");
             } catch (NumberFormatException ex) {
@@ -379,34 +387,42 @@ public class CampusEventManagementGUI {
     private void editEvent(Organizer org, Event ev) {
         JTextField titleField = new JTextField(ev.getTitle());
         JTextField locationField = new JTextField(ev.getLocation());
-        JTextField timeField = new JTextField(ev.getTime());
+        JTextField startField = new JTextField(ev.getStartTime());
+        JTextField endField = new JTextField(ev.getEndTime());
         JTextField capacityField = new JTextField(Integer.toString(ev.getCapacity()));
         JLabel titleLabel = new JLabel("標題：");
         JLabel locLabel = new JLabel("地點：");
-        JLabel timeLabel = new JLabel("時間：");
+        JLabel startLabel = new JLabel("開始時間：");
+        JLabel endLabel = new JLabel("結束時間：");
         JLabel capLabel = new JLabel("名額：");
         titleLabel.setFont(scaled(titleLabel.getFont(), 1.2f));
         locLabel.setFont(scaled(locLabel.getFont(), 1.2f));
-        timeLabel.setFont(scaled(timeLabel.getFont(), 1.2f));
+        startLabel.setFont(scaled(startLabel.getFont(), 1.2f));
+        endLabel.setFont(scaled(endLabel.getFont(), 1.2f));
         capLabel.setFont(scaled(capLabel.getFont(), 1.2f));
         titleField.setFont(scaled(titleField.getFont(), 1.2f));
         locationField.setFont(scaled(locationField.getFont(), 1.2f));
-        timeField.setFont(scaled(timeField.getFont(), 1.2f));
+        startField.setFont(scaled(startField.getFont(), 1.2f));
+        endField.setFont(scaled(endField.getFont(), 1.2f));
         capacityField.setFont(scaled(capacityField.getFont(), 1.2f));
         Object[] message = {
                 titleLabel, titleField,
                 locLabel, locationField,
-                timeLabel, timeField,
+                startLabel, startField,
+                endLabel, endField,
                 capLabel, capacityField
         };
         int option = JOptionPane.showConfirmDialog(frame, message, "編輯活動", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             try {
                 int capacity = Integer.parseInt(capacityField.getText().trim());
-                String dateStr = timeField.getText().trim();
+                String startStr = startField.getText().trim();
+                String endStr = endField.getText().trim();
+                java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
                 try {
-                    java.time.LocalDate date = java.time.LocalDate.parse(dateStr);
-                    if (date.isBefore(java.time.LocalDate.now())) {
+                    java.time.LocalDateTime sdt = java.time.LocalDateTime.parse(startStr, fmt);
+                    java.time.LocalDateTime edt = java.time.LocalDateTime.parse(endStr, fmt);
+                    if (sdt.isAfter(edt) || sdt.isBefore(java.time.LocalDateTime.now())) {
                         JOptionPane.showMessageDialog(frame, "日期無效");
                         return;
                     }
@@ -414,7 +430,7 @@ public class CampusEventManagementGUI {
                     JOptionPane.showMessageDialog(frame, "日期無效");
                     return;
                 }
-                org.editEvent(ev, titleField.getText().trim(), locationField.getText().trim(), dateStr, capacity);
+                org.editEvent(ev, titleField.getText().trim(), locationField.getText().trim(), startStr, endStr, capacity);
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(frame, "名額無效");
             }

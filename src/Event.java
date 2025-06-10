@@ -1,22 +1,26 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class Event {
     private String id;
     private String title;
     private String location;
-    private String time;
+    private String startTime;
+    private String endTime;
     private int capacity;
     private Organizer organizer;
     private List<Student> participants = new ArrayList<>();
 
-    public Event(String id, String title, String location, String time, int capacity, Organizer organizer) {
+    public Event(String id, String title, String location, String startTime, String endTime, int capacity, Organizer organizer) {
         this.id = id;
         this.title = title;
         this.location = location;
-        this.time = time;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.capacity = capacity;
         this.organizer = organizer;
     }
@@ -24,15 +28,19 @@ public class Event {
     public String getId() { return id; }
     public String getTitle() { return title; }
     public String getLocation() { return location; }
-    public String getTime() { return time; }
+    public String getStartTime() { return startTime; }
+    public String getEndTime() { return endTime; }
+    public String getTime() { return startTime + " - " + endTime; }
     public int getCapacity() { return capacity; }
     public Organizer getOrganizer() { return organizer; }
     public List<Student> getParticipants() { return participants; }
 
+    private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     public String getStatus() {
         try {
-            LocalDate date = LocalDate.parse(time);
-            if (date.isBefore(LocalDate.now())) {
+            LocalDateTime end = LocalDateTime.parse(endTime, FMT);
+            if (end.isBefore(LocalDateTime.now())) {
                 return "已結束";
             }
         } catch (DateTimeParseException e) {
@@ -44,20 +52,21 @@ public class Event {
         return "開放中";
     }
 
-    public void edit(String title, String location, String time, int capacity) {
+    public void edit(String title, String location, String startTime, String endTime, int capacity) {
         this.title = title;
         this.location = location;
-        this.time = time;
+        this.startTime = startTime;
+        this.endTime = endTime;
         if (capacity >= participants.size()) {
             this.capacity = capacity;
         }
     }
 
-    private LocalDate parseDate() {
+    private LocalDateTime parseDate() {
         try {
-            return LocalDate.parse(time);
+            return LocalDateTime.parse(startTime, FMT);
         } catch (DateTimeParseException e) {
-            return LocalDate.MAX;
+            return LocalDateTime.MAX;
         }
     }
 
